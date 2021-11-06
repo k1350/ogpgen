@@ -2,10 +2,12 @@
 package color
 
 import (
-	"errors"
 	"image/color"
 	"regexp"
 	"strconv"
+
+	e "github.com/k1350/ogpgen/internal/errors"
+	"github.com/pkg/errors"
 )
 
 // rgbaFormat はアルファ値を含むカラーコードを判定するための正規表現です。
@@ -24,7 +26,7 @@ func ConvertHexToRGBA(hex string) (color.RGBA, error) {
 	if ok := rgbFormat.MatchString(hex); ok {
 		return parseColor(hex, false)
 	}
-	return color.RGBA{0, 0, 0, 0}, errors.New("invalid color format")
+	return color.RGBA{0, 0, 0, 0}, e.ErrorInvalidColorFormat
 }
 
 // parseColor は 16 進数のカラーコードから color.RGBA を生成して返します。
@@ -37,21 +39,25 @@ func parseColor(hex string, existAlpha bool) (c color.RGBA, err error) {
 	if existAlpha {
 		a, err = strconv.ParseInt(hex[7:9], 16, 64)
 		if err != nil {
-			return c, err
+			err = errors.Wrap(e.ErrorInvalidColorFormat, err.Error())
+			return
 		}
 	}
 	co := float64(a) / 255
 
 	r, err := strconv.ParseInt(hex[1:3], 16, 64)
 	if err != nil {
+		err = errors.Wrap(e.ErrorInvalidColorFormat, err.Error())
 		return c, err
 	}
 	g, err := strconv.ParseInt(hex[3:5], 16, 64)
 	if err != nil {
+		err = errors.Wrap(e.ErrorInvalidColorFormat, err.Error())
 		return c, err
 	}
 	b, err := strconv.ParseInt(hex[5:7], 16, 64)
 	if err != nil {
+		err = errors.Wrap(e.ErrorInvalidColorFormat, err.Error())
 		return c, err
 	}
 

@@ -2,7 +2,6 @@
 package ogpgen
 
 import (
-	"errors"
 	"image"
 	"image/color"
 	"image/draw"
@@ -13,7 +12,9 @@ import (
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	c "github.com/k1350/ogpgen/internal/color"
+	e "github.com/k1350/ogpgen/internal/errors"
 	"github.com/k1350/ogpgen/internal/kinsoku"
+	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
 )
@@ -53,16 +54,18 @@ func NewOgpImage(opt Option) (o *OgpImage, err error) {
 
 	ftBin, err := ioutil.ReadFile(opt.FontPath)
 	if err != nil {
+		err = errors.Wrap(e.ErrorFontReadFailed, err.Error())
 		return
 	}
 	ft, err := truetype.Parse(ftBin)
 	if err != nil {
+		err = errors.Wrap(e.ErrorFontParseFailed, err.Error())
 		return
 	}
 	o.Font = ft
 
 	if opt.FontSize <= 0.0 {
-		err = errors.New("FontSize should be positive number")
+		err = e.ErrorFontSizeNegative
 		return
 	}
 	o.FontSize = opt.FontSize
@@ -78,11 +81,13 @@ func NewOgpImage(opt Option) (o *OgpImage, err error) {
 
 	file, err := os.Open(opt.BackgroundImagePath)
 	if err != nil {
+		err = errors.Wrap(e.ErrorBackgroundImageReadFailed, err.Error())
 		return
 	}
 	defer file.Close()
 	img, err := jpeg.Decode(file)
 	if err != nil {
+		err = errors.Wrap(e.ErrorBackgroundImageDecodeFailed, err.Error())
 		return
 	}
 	o.BackgroundImage = img
@@ -121,6 +126,7 @@ func (o *OgpImage) Draw(text string) (img *image.RGBA, err error) {
 		dot := fixed.Point26_6{X: fixed.I((imageWidth - textWidth) / 2), Y: fixed.I((imageHeight-face.Metrics().Height.Ceil()*rows)/2 + (i+1)*(face.Metrics().Height.Ceil()+o.LineSpace) + o.TopMargin)}
 		_, err = c.DrawString(v, dot)
 		if err != nil {
+			err = errors.Wrap(e.ErrorDrawFailed, err.Error())
 			return
 		}
 	}
