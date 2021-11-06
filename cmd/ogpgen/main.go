@@ -7,7 +7,9 @@ import (
 	"log"
 	"os"
 
+	e "github.com/k1350/ogpgen/internal/errors"
 	"github.com/k1350/ogpgen/internal/ogpgen"
+	"github.com/pkg/errors"
 )
 
 func main() {
@@ -34,22 +36,25 @@ func main() {
 		},
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%+v", err)
 	}
 
 	img, err := d.Draw(*text)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%+v", err)
 	}
 
 	newFile, err := os.Create(*out)
 	if err != nil {
-		log.Fatal(err)
+		err = errors.Wrap(e.ErrorOutputFileCreateFailed, err.Error())
+		log.Fatalf("%+v", err)
 	}
 	defer newFile.Close()
 
 	b := bufio.NewWriter(newFile)
-	if err = jpeg.Encode(b, img, &jpeg.Options{Quality: 100}); err != nil {
-		log.Fatal(err)
+	err = jpeg.Encode(b, img, &jpeg.Options{Quality: 100})
+	if err != nil {
+		err = errors.Wrap(e.ErrorOutputFailed, err.Error())
+		log.Fatalf("%+v", err)
 	}
 }
