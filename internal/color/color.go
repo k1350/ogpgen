@@ -1,4 +1,4 @@
-// package color は 16 進数のカラーコードから color.RGBA を生成するパッケージです。
+// package color は 16 進数のカラーコードから color.NRGBA を生成するパッケージです。
 package color
 
 import (
@@ -16,9 +16,9 @@ var rgbaFormat = regexp.MustCompile(`^#[0-9a-fA-F]{2}[0-9a-fA-F]{2}[0-9a-fA-F]{2
 // rgbFormat はアルファ値を含まないカラーコードを判定するための正規表現です。
 var rgbFormat = regexp.MustCompile(`^#[0-9a-fA-F]{2}[0-9a-fA-F]{2}[0-9a-fA-F]{2}$`)
 
-// ConvertHexToRGBA は 16 進数のカラーコードから color.RGBA を生成して返します。
+// ConvertHexToNRGBA は 16 進数のカラーコードから color.NRGBA を生成して返します。
 // hex はカラーコードです。#333 のような省略形は対応していません。
-func ConvertHexToRGBA(hex string) (color.RGBA, error) {
+func ConvertHexToNRGBA(hex string) (color.NRGBA, error) {
 
 	if ok := rgbaFormat.MatchString(hex); ok {
 		return parseColor(hex, true)
@@ -26,13 +26,13 @@ func ConvertHexToRGBA(hex string) (color.RGBA, error) {
 	if ok := rgbFormat.MatchString(hex); ok {
 		return parseColor(hex, false)
 	}
-	return color.RGBA{0, 0, 0, 0}, e.ErrorInvalidColorFormat
+	return color.NRGBA{0, 0, 0, 0}, e.ErrorInvalidColorFormat
 }
 
-// parseColor は 16 進数のカラーコードから color.RGBA を生成して返します。
+// parseColor は 16 進数のカラーコードから color.NRGBA を生成して返します。
 // hex はカラーコードです。#333 のような省略形は対応していません。
 // existAlpha はアルファ値を含むかどうかを指定します。true の場合はアルファ値を読み取り、false の場合はアルファ値は FF とします。
-func parseColor(hex string, existAlpha bool) (c color.RGBA, err error) {
+func parseColor(hex string, existAlpha bool) (c color.NRGBA, err error) {
 	err = nil
 	var a int64
 	a = 255
@@ -43,7 +43,6 @@ func parseColor(hex string, existAlpha bool) (c color.RGBA, err error) {
 			return
 		}
 	}
-	co := float64(a) / 255
 
 	r, err := strconv.ParseInt(hex[1:3], 16, 64)
 	if err != nil {
@@ -61,9 +60,9 @@ func parseColor(hex string, existAlpha bool) (c color.RGBA, err error) {
 		return c, err
 	}
 
-	c.R = uint8(float64(r) * co)
-	c.G = uint8(float64(g) * co)
-	c.B = uint8(float64(b) * co)
+	c.R = uint8(r)
+	c.G = uint8(g)
+	c.B = uint8(b)
 	c.A = uint8(a)
 	return
 }
