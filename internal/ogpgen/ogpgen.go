@@ -24,7 +24,7 @@ type OgpImage struct {
 	Font            *truetype.Font
 	BackgroundImage image.Image
 	FontSize        float64
-	FontColor       color.RGBA
+	FontColor       color.NRGBA
 	TopMargin       int
 	SideMargin      int
 	LineSpace       int
@@ -73,7 +73,7 @@ func NewOgpImage(opt Option) (o *OgpImage, err error) {
 	if opt.FontColor == "" {
 		opt.FontColor = "#000000"
 	}
-	c, err := c.ConvertHexToRGBA(opt.FontColor)
+	c, err := c.ConvertHexToNRGBA(opt.FontColor)
 	if err != nil {
 		return
 	}
