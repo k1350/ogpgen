@@ -3,7 +3,7 @@
 必要環境
 
 - Git
-- Go (version 1.16.5 で動作確認済)
+- Go (version 1.19.3 で動作確認済)
 
 ```
 git clone https://github.com/k1350/ogpgen.git
@@ -14,12 +14,12 @@ go build -o ogpgen ./cmd/ogpgen
 ## 使い方
 最低限の引数指定時
 ```
-.\ogpgen -text="OGP 画像生成ツール" -bpath="/your_template/template.jpg" -fpath="/your_font/03SmartFontUI.ttf"
+./ogpgen -text="OGP 画像生成ツール" -bpath="/your_template/template.jpg" -fpath="/your_font/03SmartFontUI.ttf"
 ```
 
 引数全指定時
 ```
-.\ogpgen -text="OGP 画像生成ツール" -bpath="/your_template/template.jpg" -fpath="/your_font/03SmartFontUI.ttf" -fsize=90 -fcolor="#A2Ad0580" -tmargin=75 -smargin=90 -lspace=10 -o="/out_dir/output.jpg"
+./ogpgen -text="OGP 画像生成ツール" -bpath="/your_template/template.jpg" -fpath="/your_font/03SmartFontUI.ttf" -fsize=90 -fcolor="#A2Ad0580" -tmargin=75 -smargin=90 -lspace=10 -o="/out_dir/output.jpg"
 ```
 
 ### 引数の説明
@@ -32,3 +32,21 @@ go build -o ogpgen ./cmd/ogpgen
 - smargin: 左右マージン。大きい値を指定するほど文字が中央に寄る。未指定の場合は 0 になる。
 - lspace: 行間。正の値を指定すると行間が広がり、負の値を指定すると詰まる。未指定の場合は 0 になる。
 - o: 出力ファイル名。未指定の場合は out.jpg になる。
+
+## 開発
+### テスト
+このファイルがあるディレクトリの一つ上の階層に `ogpgen_files` というディレクトリを作り、下記の構成でファイルを置いておかないと一部テストが動作しない。
+
+```
+ogpgen_files
+|
+|-fonts
+| |-03SmartFontUI.ttf
+|
+|-templates
+  |-template.jpg
+```
+
+03SmartFontUI.ttf は TrueType フォントなら何でもいい。
+
+template.jpg は OGP 画像のベースになる適当な jpg ファイル。
